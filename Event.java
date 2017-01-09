@@ -17,10 +17,10 @@ public class Event
      */
     public Event(String o, int t, String[] a)
     {
-	operation = o;
-	time = t;
-	args = a;
-	done = false;
+        operation = o;
+        time = t;
+        args = a;
+        done = false;
     }
 
     /**
@@ -28,7 +28,7 @@ public class Event
      * @return current time
      */
     public int getTime() {
-	return time;
+        return time;
     }
 
     /**
@@ -36,7 +36,7 @@ public class Event
      * @return name of the operation
      */
     public String getOperation() {
-	return operation;
+        return operation;
     }
 
     /**
@@ -44,7 +44,7 @@ public class Event
      * @return the number of arguments
      */
     public int getNumberOfArgumentss() {
-	return args.length;
+        return args.length;
     }
 
     /**
@@ -53,7 +53,7 @@ public class Event
      * @return the argument at i
      */ 
     public String getArgument(int i) {
-	return args[i];
+        return args[i];
     }
 
     /**
@@ -62,12 +62,12 @@ public class Event
      */ 
     public String toString()
     {
-	String s = "Event is " +operation + " to occur at "+time+" with";
-	for (int i=0; i<args.length; i++)
-	    {
-		s = s + " " + args[i];
-	    }
-	return s;
+        String s = "Event is " +operation + " to occur at "+time+" with";
+        for (int i=0; i<args.length; i++)
+        {
+            s = s + " " + args[i];
+        }
+        return s;
     }
 
     /**
@@ -75,7 +75,7 @@ public class Event
      */
     public void setDone()
     {
-	done = true;
+        done = true;
     }
 
     /**
@@ -84,6 +84,6 @@ public class Event
      */
     public boolean getState()
     {
-	return done;
+        return done;
     }
 }

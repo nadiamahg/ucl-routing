@@ -11,7 +11,7 @@ public class Payload {
      */
     public Payload()
     {
-	data = new Vector<Object>();
+        data = new Vector<Object>();
     }
 
     /**
@@ -20,7 +20,7 @@ public class Payload {
      */
     public void addEntry(Object o)
     {
-	data.addElement(o);
+        data.addElement(o);
     }
 
     /**
@@ -29,6 +29,6 @@ public class Payload {
      */
     public Vector<Object> getData()
     {
-	return data;
+        return data;
     }
 }

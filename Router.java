@@ -39,33 +39,33 @@ public class Router
      * @param e if entry expiry is enabled or not.
      */
     public Router(int i, int n, String c, int u, boolean pr, boolean e) {
-	id = i;
-	num_interfaces = n;
-	current_time = new Integer(0);
-	classname = c;
-    update_interval = u;
-    preverse = pr;
-    expire = e;
+        id = i;
+        num_interfaces = n;
+        current_time = new Integer(0);
+        classname = c;
+        update_interval = u;
+        preverse = pr;
+        expire = e;
         
-	link = new Link[n];
+        link = new Link[n];
 
-	try {
-	    ralg = (RoutingAlgorithm)(Class.forName(classname)).newInstance();
-	    ralg.setRouterObject(this);
-        ralg.setUpdateInterval(update_interval);
-        ralg.setAllowPReverse(preverse);
-        ralg.setAllowExpire(expire);
-	    ralg.initalise();
-	} catch (Exception exp) {
-	    exp.printStackTrace();
-	}
-	
-	counter[SENT] = 0;
+        try {
+            ralg = (RoutingAlgorithm)(Class.forName(classname)).newInstance();
+            ralg.setRouterObject(this);
+            ralg.setUpdateInterval(update_interval);
+            ralg.setAllowPReverse(preverse);
+            ralg.setAllowExpire(expire);
+            ralg.initalise();
+        } catch (Exception exp) {
+            exp.printStackTrace();
+        }
+        
+        counter[SENT] = 0;
         counter[RECV] = 0;
-	counter[DROP] = 0;
-	counter[FORW] = 0;
-	
-	System.out.println("Created "+this);
+        counter[DROP] = 0;
+        counter[FORW] = 0;
+        
+        System.out.println("Created "+this);
     }
     
     /**
@@ -75,17 +75,17 @@ public class Router
      */
     public void addLinks(Link l)
     {
-	int i0 = l.getInterface(0);
-	int r0 = l.getRouter(0);
-	int i1 = l.getInterface(1);	
-	int r1 = l.getRouter(1);
-	System.out.println("Adding link "+l);
-	if (r0 == id) {
-	    link[i0] = l;
-	}
-	else if (r1 == id) {
-	    link[i1] = l;
-	}
+        int i0 = l.getInterface(0);
+        int r0 = l.getRouter(0);
+        int i1 = l.getInterface(1); 
+        int r1 = l.getRouter(1);
+        System.out.println("Adding link "+l);
+        if (r0 == id) {
+            link[i0] = l;
+        }
+        else if (r1 == id) {
+            link[i1] = l;
+        }
     }
     
     /**
@@ -94,7 +94,7 @@ public class Router
      */
     public Link[] getLinks()
     {
-	return link;
+        return link;
     }
 
     /**
@@ -104,7 +104,7 @@ public class Router
     public String toString() {
         return "Router "+id+" has "+num_interfaces+" interfaces and uses class "+classname+" update interval "+update_interval + ", split horizon + poison reverse: " + (preverse? "on " : "off ")
         + "expire entries " + (expire? "on": "off");
-	
+        
     }
 
     /**
@@ -113,7 +113,7 @@ public class Router
      */
     public int getId()
     {
-	return id;
+        return id;
     }
     
     /**
@@ -125,7 +125,7 @@ public class Router
      */
     public void send(Packet p)
     {
-	send(p,-3);
+        send(p,-3);
     }
 
     /**
@@ -140,41 +140,41 @@ public class Router
      */
     public void send(Packet p, int iface)
     {
-	//System.out.println("sending "+p+" on "+iface);
-	// Direct transmission
-	if (p.getSource() == id) {
-	    counter[SENT]++;
-	}
+    //System.out.println("sending "+p+" on "+iface);
+    // Direct transmission
+        if (p.getSource() == id) {
+            counter[SENT]++;
+        }
 
-	if (iface != -3) {
-	    //System.out.println("-3");
-	    link[iface].enqueuePackets(id,p);
-	    return;
-	}
-	int i = ralg.getNextHop(p.getDestination());
-	// Unknow interface
-	if (i == -2) {
-	    //System.out.println("Unknown interface");
-	    System.out.println("Dropping packet "+p);
-	    counter[DROP]++;
-	    return;
-	}
-	
-	if (p.get_ttl() < 1)
-	    {
-		System.out.println("Dropping packet "+p);
-		counter[DROP]++;
-		
-	    }
-	else
-	    {
-		p.decrement_ttl();
-		System.out.println("Forwarded packet "+p);
-		link[i].enqueuePackets(id,p);
-		if (p.getSource() != id) {
-		    counter[FORW]++;
-		}
-	    }
+        if (iface != -3) {
+        //System.out.println("-3");
+            link[iface].enqueuePackets(id,p);
+            return;
+        }
+        int i = ralg.getNextHop(p.getDestination());
+        // Unknow interface
+        if (i == -2) {
+        //System.out.println("Unknown interface");
+            System.out.println("Dropping packet "+p);
+            counter[DROP]++;
+            return;
+        }
+        
+        if (p.get_ttl() < 1)
+        {
+            System.out.println("Dropping packet "+p);
+            counter[DROP]++;
+            
+        }
+        else
+        {
+            p.decrement_ttl();
+            System.out.println("Forwarded packet "+p);
+            link[i].enqueuePackets(id,p);
+            if (p.getSource() != id) {
+                counter[FORW]++;
+            }
+        }
     }
 
     /**
@@ -185,12 +185,12 @@ public class Router
      */
     public Packet recv(int iface)
     {
-	Packet p;
-	synchronized(link[iface]) {
-	    p = link[iface].dequeuePackets(id);
-	}
-	
-	return p;
+        Packet p;
+        synchronized(link[iface]) {
+            p = link[iface].dequeuePackets(id);
+        }
+        
+        return p;
     }
 
     /**
@@ -200,7 +200,7 @@ public class Router
      */
     public int getInterfaceWeight(int iface)
     {
-	return link[iface].getInterfaceWeight(id);
+        return link[iface].getInterfaceWeight(id);
     }
 
     /**
@@ -210,10 +210,10 @@ public class Router
      */
     public boolean getInterfaceState(int iface)
     {
-	// If the interface value is -1, it is the loop back interface, so
-	// it is always up.
-	if (iface == -1) { return true; }
-	return link[iface].isUp();
+    // If the interface value is -1, it is the loop back interface, so
+    // it is always up.
+        if (iface == -1) { return true; }
+        return link[iface].isUp();
     }
 
     /**
@@ -225,22 +225,22 @@ public class Router
      */
     private void process_packets()
     {
-	Packet p;
-	for (int i = 0; i<link.length; i++) {
-	    while((p = recv(i)) != null) {
-		if (p.getDestination() == id) {
-		    System.out.println("Received packet "+p);
-		    counter[RECV]++;
-		}
-		else if (p.getDestination() == Packet.BROADCAST) {
-		    ralg.processRoutingPacket(p,i);
-		    counter[RECV]++;
-		}
-		else {
-		    send(p);		    
-		}
-	    }
-	}
+        Packet p;
+        for (int i = 0; i<link.length; i++) {
+            while((p = recv(i)) != null) {
+                if (p.getDestination() == id) {
+                    System.out.println("Received packet "+p);
+                    counter[RECV]++;
+                }
+                else if (p.getDestination() == Packet.BROADCAST) {
+                    ralg.processRoutingPacket(p,i);
+                    counter[RECV]++;
+                }
+                else {
+                    send(p);            
+                }
+            }
+        }
     }
 
     /**
@@ -249,9 +249,9 @@ public class Router
      */
     public void setTimeStep(int time)
     {
-	synchronized(current_time) {
-	    current_time = new Integer(time);
-	}
+        synchronized(current_time) {
+            current_time = new Integer(time);
+        }
     }
 
     /**
@@ -260,9 +260,9 @@ public class Router
      */
     public int getCurrentTime()
     {
-	synchronized(current_time) {
-	    return current_time.intValue();
-	}
+        synchronized(current_time) {
+            return current_time.intValue();
+        }
     }
 
     /**
@@ -272,14 +272,14 @@ public class Router
      */
     private void sendRoutingTable()
     {
-	Packet p;
-	for (int i = 0; i<link.length; i++)
-	    {
-		p = ralg.generateRoutingPacket(i);
-		if (p != null ) { 
-		    send(p,i);
-		}
-	    }		
+        Packet p;
+        for (int i = 0; i<link.length; i++)
+        {
+            p = ralg.generateRoutingPacket(i);
+            if (p != null ) { 
+                send(p,i);
+            }
+        }       
     }
 
     /**
@@ -290,16 +290,16 @@ public class Router
      */
     public void go()
     {
-	process_packets();
-	ralg.tidyTable();
-	sendRoutingTable();
+        process_packets();
+        ralg.tidyTable();
+        sendRoutingTable();
     }
     /**
      * Dump the routing table to stdout
      */
     public void dumpRoutingTable()
     {
-	ralg.showRoutes();
+        ralg.showRoutes();
     }
     
     /**
@@ -308,17 +308,17 @@ public class Router
      */
     public void dumpPacketStats()
     {
-	String s = "Pkt stats for "+id+" : ";
-	s = s + " s "+counter[SENT]; 
-	s = s + " r "+counter[RECV];
-	s = s + " d "+counter[DROP];
-	s = s + " f "+counter[FORW];
-	s = s + "\n";
-	for (int i = 0; i<link.length; i++)
-	    {
-		s = s + link[i].dumpPacketStats()+ "\n";
-	    }
-	System.out.print(s);
+        String s = "Pkt stats for "+id+" : ";
+        s = s + " s "+counter[SENT]; 
+        s = s + " r "+counter[RECV];
+        s = s + " d "+counter[DROP];
+        s = s + " f "+counter[FORW];
+        s = s + "\n";
+        for (int i = 0; i<link.length; i++)
+        {
+            s = s + link[i].dumpPacketStats()+ "\n";
+        }
+        System.out.print(s);
     }
 
     /**
@@ -327,6 +327,6 @@ public class Router
      */
     public int getNumInterfaces()
     {
-	return num_interfaces; 
+        return num_interfaces; 
     }
 }

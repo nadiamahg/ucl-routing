@@ -9,8 +9,8 @@ public class RoutingPacket extends Packet
      * sets the type to ROUTING.
      */
     RoutingPacket(int src, int dst)
-	{
-	    super(src,dst);
-	    type = Packet.ROUTING;
-	}
+    {
+        super(src,dst);
+        type = Packet.ROUTING;
+    }
 }

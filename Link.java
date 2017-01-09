@@ -30,21 +30,21 @@ public class Link
      */
     public Link(int r0, int i0, int w0, int r1, int i1, int w1)
     {
-	router[0] = r0;
-	iface[0] = i0;
-	weight[0] = w0;
-	router[1] = r1;
-	iface[1] = i1;
-	weight[1] = w1;
-	in[0] = new Vector<Packet>();
-	out[0] = new Vector<Packet>();
-	in[1] = new Vector<Packet>();
-	out[1] = new Vector<Packet>();
-	counter[0][SENT] = 0;
-	counter[0][RECV] = 0;
-	counter[1][SENT] = 0;
-	counter[1][RECV] = 0;
-	up = true;
+        router[0] = r0;
+        iface[0] = i0;
+        weight[0] = w0;
+        router[1] = r1;
+        iface[1] = i1;
+        weight[1] = w1;
+        in[0] = new Vector<Packet>();
+        out[0] = new Vector<Packet>();
+        in[1] = new Vector<Packet>();
+        out[1] = new Vector<Packet>();
+        counter[0][SENT] = 0;
+        counter[0][RECV] = 0;
+        counter[1][SENT] = 0;
+        counter[1][RECV] = 0;
+        up = true;
     }
 
     /**
@@ -55,10 +55,10 @@ public class Link
      */
     public int getRouter(int id)
     {
-	if (id == 0)
-	    return router[0];
-	else
-	    return router[1];
+        if (id == 0)
+            return router[0];
+        else
+            return router[1];
     }
 
     /**
@@ -69,10 +69,10 @@ public class Link
      */
     public int getInterface(int id)
     {
-	if (id == 0)
-	    return iface[0];
-	else
-	    return iface[1];
+        if (id == 0)
+            return iface[0];
+        else
+            return iface[1];
     }
 
     /**
@@ -81,7 +81,7 @@ public class Link
      */
     public boolean isUp()
     {
-	return up;
+        return up;
     }
 
     /**
@@ -90,7 +90,7 @@ public class Link
      */
     public void setState(boolean s)
     {
-	up = s;
+        up = s;
     }
 
     /**
@@ -99,37 +99,37 @@ public class Link
      */
     public void movePackets()
     {
-	Packet p;
-	Payload payload;
-	synchronized (this) {
-	    if (isUp()) {
-		while (out[0].size() > 0) {
-		    p = out[0].firstElement();
-		    // for data packets we mark them with the path.
-		    if (p.getType() == Packet.DATA) {
-			payload = p.getPayload();
-			payload.addEntry(new String(""+router[0]+"."+iface[0]+"->"+router[1]+"."+iface[1]));
-			p.setPayload(payload);
-		    }
-		    in[1].addElement(p);
-		    out[0].removeElement(p);
-		}
-		while (out[1].size() > 0) {
-		    p = out[1].firstElement();
-		    // for data packets we mark them with the path.
-		    if (p.getType() == Packet.DATA) {
-			payload = p.getPayload();
-			payload.addEntry(new String(""+router[1]+"."+iface[1]+"->"+router[0]+"."+iface[0]));
-			p.setPayload(payload);
-		    }
-		    in[0].addElement(p);
-		    out[1].removeElement(p);
-		}
-	    }
-	    if (out[0].size() != 0) { System.out.println("size of out0 "+out[0].size()); }
-	    if (out[1].size() != 0) { System.out.println("size of out1 "+out[1].size()); }
+        Packet p;
+        Payload payload;
+        synchronized (this) {
+            if (isUp()) {
+                while (out[0].size() > 0) {
+                    p = out[0].firstElement();
+            // for data packets we mark them with the path.
+                    if (p.getType() == Packet.DATA) {
+                        payload = p.getPayload();
+                        payload.addEntry(new String(""+router[0]+"."+iface[0]+"->"+router[1]+"."+iface[1]));
+                        p.setPayload(payload);
+                    }
+                    in[1].addElement(p);
+                    out[0].removeElement(p);
+                }
+                while (out[1].size() > 0) {
+                    p = out[1].firstElement();
+            // for data packets we mark them with the path.
+                    if (p.getType() == Packet.DATA) {
+                        payload = p.getPayload();
+                        payload.addEntry(new String(""+router[1]+"."+iface[1]+"->"+router[0]+"."+iface[0]));
+                        p.setPayload(payload);
+                    }
+                    in[0].addElement(p);
+                    out[1].removeElement(p);
+                }
+            }
+            if (out[0].size() != 0) { System.out.println("size of out0 "+out[0].size()); }
+            if (out[1].size() != 0) { System.out.println("size of out1 "+out[1].size()); }
 
-	}
+        }
     }
 
     /**
@@ -141,14 +141,14 @@ public class Link
      */
     public void enqueuePackets(int routerid, Packet p)
     {
-	if (routerid == router[0]) { 
-	    out[0].addElement(p); 
-	    counter[0][SENT]++;
-	}
-	else { 
-	    out[1].addElement(p); 
-	    counter[1][SENT]++;
-	}
+        if (routerid == router[0]) { 
+            out[0].addElement(p); 
+            counter[0][SENT]++;
+        }
+        else { 
+            out[1].addElement(p); 
+            counter[1][SENT]++;
+        }
     }
 
     /**
@@ -159,8 +159,8 @@ public class Link
      */
     public int getInterfaceWeight(int routerid)
     {
-	if (routerid == router[0]) { return weight[0]; }
-	else { return weight[1]; }
+        if (routerid == router[0]) { return weight[0]; }
+        else { return weight[1]; }
     }
 
 
@@ -173,26 +173,26 @@ public class Link
 
     public Packet dequeuePackets(int routerid)
     {
-	Packet p;
-	if (routerid == router[0]) {
-	    //System.out.println("iface 0 size "+in[0].size()); 
-	    if (in[0].size() >0) {
-		p = in[0].firstElement();
-		in[0].removeElementAt(0);
-		counter[0][RECV]++;
-		return p;
-	    }
-	}
-	else {
-	    if (in[1].size() >0) {
-		//System.out.println("iface 1 size "+in[1].size()); 
-		p = in[1].firstElement();
-		in[1].removeElementAt(0);
-		counter[1][RECV]++;
-		return p;
-	    }
-	}
-	return null;
+        Packet p;
+        if (routerid == router[0]) {
+        //System.out.println("iface 0 size "+in[0].size()); 
+            if (in[0].size() >0) {
+                p = in[0].firstElement();
+                in[0].removeElementAt(0);
+                counter[0][RECV]++;
+                return p;
+            }
+        }
+        else {
+            if (in[1].size() >0) {
+        //System.out.println("iface 1 size "+in[1].size()); 
+                p = in[1].firstElement();
+                in[1].removeElementAt(0);
+                counter[1][RECV]++;
+                return p;
+            }
+        }
+        return null;
     }
 
     /**
@@ -205,12 +205,12 @@ public class Link
      */
     public int queueLength(int iface, boolean inbound)
     {
-	if (inbound) {
-	    return (in[iface]).size();
-	}
-	else {
-	    return (out[iface]).size();
-	}
+        if (inbound) {
+            return (in[iface]).size();
+        }
+        else {
+            return (out[iface]).size();
+        }
     }
 
     /**
@@ -219,10 +219,10 @@ public class Link
      */
     public String toString()
     {
-	String s = "Link (R0:"+router[0]+" I0:"+iface[0]+" W0:"+weight[0]+")";
-	s = s + "<-->";
-	s = s + "(R1:"+router[1]+" I1:"+iface[1]+" W1:"+weight[1]+")";
-	return s;	
+        String s = "Link (R0:"+router[0]+" I0:"+iface[0]+" W0:"+weight[0]+")";
+        s = s + "<-->";
+        s = s + "(R1:"+router[1]+" I1:"+iface[1]+" W1:"+weight[1]+")";
+        return s;   
     }
 
     /**
@@ -231,12 +231,12 @@ public class Link
      */
     public String dumpPacketStats()
     {
-	String s = "(R0:"+router[0]+" I0:"+iface[0]+")";
-	s = s + " s "+counter[0][SENT]+" r "+counter[0][RECV];
-	s = s + "<-->";
-	s = s + "(R1:"+router[1]+" I1:"+iface[1]+")";
-	s = s + " s "+counter[1][SENT]+" r "+counter[1][RECV];
-	return s;	
+        String s = "(R0:"+router[0]+" I0:"+iface[0]+")";
+        s = s + " s "+counter[0][SENT]+" r "+counter[0][RECV];
+        s = s + "<-->";
+        s = s + "(R1:"+router[1]+" I1:"+iface[1]+")";
+        s = s + " s "+counter[1][SENT]+" r "+counter[1][RECV];
+        return s;   
     }
 
 }

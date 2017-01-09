@@ -27,9 +27,9 @@ public class Simulator
      */
     public Simulator(String cf)
     {
-	config_file = cf;
-	System.out.println("Loading configuration : "+config_file);
-	Config config = new Config(config_file,this);
+        config_file = cf;
+        System.out.println("Loading configuration : "+config_file);
+        Config config = new Config(config_file,this);
     }
 
     /** 
@@ -38,7 +38,7 @@ public class Simulator
      */
     public String toString()
     {
-	return "UCL CS Routing Sim";
+        return "UCL CS Routing Sim";
     }
     
     /**
@@ -47,7 +47,7 @@ public class Simulator
      */ 
     public void set_stop_time(int t)
     {
-	stop_time = t;
+        stop_time = t;
     }
 
     /**
@@ -57,12 +57,12 @@ public class Simulator
      */
     public void add_routers(Vector<Router> r)
     {
-	routers = new Router[r.size()];
-	int count = 0;
-    for (Router tr : r) {
-	    routers[tr.getId()] = tr;
-	    count++;
-	}
+        routers = new Router[r.size()];
+        int count = 0;
+        for (Router tr : r) {
+            routers[tr.getId()] = tr;
+            count++;
+        }
     }
 
     /**
@@ -72,13 +72,13 @@ public class Simulator
      */
     public void add_events(Vector<Event> e)
     {
-	events = new Event[e.size()]; 
-	int count = 0;
-    for (Event te : e) {
-	    System.out.println("Adding "+te);
-	    events[count] = te;
-	    count++;
-	}
+        events = new Event[e.size()]; 
+        int count = 0;
+        for (Event te : e) {
+            System.out.println("Adding "+te);
+            events[count] = te;
+            count++;
+        }
     }
 
     /**
@@ -88,17 +88,17 @@ public class Simulator
      */
     public void add_links(Vector<Link> l)
     {
-	links = new Link[l.size()];
-	int count = 0;
-    for (Link ml : l) {
-	    links[count] = ml;
-	    count++;
-	}
-	for (int i=0; i<links.length; i++) {
-	    routers[links[i].getRouter(0)].addLinks(links[i]); 
-	    routers[links[i].getRouter(1)].addLinks(links[i]); 
-	}
-	
+        links = new Link[l.size()];
+        int count = 0;
+        for (Link ml : l) {
+            links[count] = ml;
+            count++;
+        }
+        for (int i=0; i<links.length; i++) {
+            routers[links[i].getRouter(0)].addLinks(links[i]); 
+            routers[links[i].getRouter(1)].addLinks(links[i]); 
+        }
+        
     }
 
     /** 
@@ -107,68 +107,68 @@ public class Simulator
      */
     private void process_events(int now)
     {
-	Event event;
-	Packet packet;
+        Event event;
+        Packet packet;
 
-	//	while (myenum.hasMoreElements()) {
-	for (int count = 0; count < events.length ; count++) {
-	    event = events[count];
-	    if ((event.getTime() <= now) && (event.getState() != true)) {
-		if (event.getOperation().equals("send")) {
-		    packet = new Packet(Integer.parseInt(event.getArgument(0)),Integer.parseInt(event.getArgument(1)));
-		    packet.setType(Packet.DATA);
-		    packet_counter++;
-		    packet.setSequenceNumber(packet_counter);
-		    routers[packet.getSource()].send(packet);
-		    
-		}
-		else if (event.getOperation().equals("uplink")) {
-		    for (int i=0; i<links.length;i++) {
-			if (links[i].getRouter(0) == Integer.parseInt(event.getArgument(0)) && 
-			    links[i].getInterface(0) == Integer.parseInt(event.getArgument(1)) && 
-			    links[i].getRouter(1) == Integer.parseInt(event.getArgument(2)) && 
-			    links[i].getInterface(1) == Integer.parseInt(event.getArgument(3)) ) {
-			    System.out.println("Setting link status to up "+links[i]);
-			    links[i].setState(true);
-			}
-		    }
-		}
-		else if (event.getOperation().equals("downlink")) {
-		    for (int i=0; i<links.length;i++) {
-			if (links[i].getRouter(0) == Integer.parseInt(event.getArgument(0)) && 
-			    links[i].getInterface(0) == Integer.parseInt(event.getArgument(1)) && 
-			    links[i].getRouter(1) == Integer.parseInt(event.getArgument(2)) && 
-			    links[i].getInterface(1) == Integer.parseInt(event.getArgument(3)) ) {
-			    System.out.println("Setting link status to down "+links[i]);
-			    links[i].setState(false);
-			}
-		    }
-		}
-		else if (event.getOperation().equals("dumprt")) {
-		    if (event.getArgument(0).equals("all")) {
-			for (int i=0; i<routers.length; i++) {
-			    routers[i].dumpRoutingTable();
-			}   
-		    }
-		    else {
-			routers[Integer.parseInt(event.getArgument(0))].dumpRoutingTable();
-		    }
-		}
-		else if (event.getOperation().equals("dumpPacketStats")) {
-		    System.out.println("event "+event);
-		    if (event.getArgument(0).equals("all")) {
-			for (int i=0; i<routers.length; i++) {
-			    routers[i].dumpPacketStats();
-			}   
-		    }
-		    else {
-			routers[Integer.parseInt(event.getArgument(0))].dumpPacketStats();
-		    }
-		}
-		events[count].setDone();
-	    }
-	}
+    //  while (myenum.hasMoreElements()) {
+        for (int count = 0; count < events.length ; count++) {
+            event = events[count];
+            if ((event.getTime() <= now) && (event.getState() != true)) {
+                if (event.getOperation().equals("send")) {
+                    packet = new Packet(Integer.parseInt(event.getArgument(0)),Integer.parseInt(event.getArgument(1)));
+                    packet.setType(Packet.DATA);
+                    packet_counter++;
+                    packet.setSequenceNumber(packet_counter);
+                    routers[packet.getSource()].send(packet);
+                    
+                }
+                else if (event.getOperation().equals("uplink")) {
+                    for (int i=0; i<links.length;i++) {
+                        if (links[i].getRouter(0) == Integer.parseInt(event.getArgument(0)) && 
+                            links[i].getInterface(0) == Integer.parseInt(event.getArgument(1)) && 
+                            links[i].getRouter(1) == Integer.parseInt(event.getArgument(2)) && 
+                            links[i].getInterface(1) == Integer.parseInt(event.getArgument(3)) ) {
+                            System.out.println("Setting link status to up "+links[i]);
+                        links[i].setState(true);
+                    }
+                }
+            }
+            else if (event.getOperation().equals("downlink")) {
+                for (int i=0; i<links.length;i++) {
+                    if (links[i].getRouter(0) == Integer.parseInt(event.getArgument(0)) && 
+                        links[i].getInterface(0) == Integer.parseInt(event.getArgument(1)) && 
+                        links[i].getRouter(1) == Integer.parseInt(event.getArgument(2)) && 
+                        links[i].getInterface(1) == Integer.parseInt(event.getArgument(3)) ) {
+                        System.out.println("Setting link status to down "+links[i]);
+                    links[i].setState(false);
+                }
+            }
+        }
+        else if (event.getOperation().equals("dumprt")) {
+            if (event.getArgument(0).equals("all")) {
+                for (int i=0; i<routers.length; i++) {
+                    routers[i].dumpRoutingTable();
+                }   
+            }
+            else {
+                routers[Integer.parseInt(event.getArgument(0))].dumpRoutingTable();
+            }
+        }
+        else if (event.getOperation().equals("dumpPacketStats")) {
+            System.out.println("event "+event);
+            if (event.getArgument(0).equals("all")) {
+                for (int i=0; i<routers.length; i++) {
+                    routers[i].dumpPacketStats();
+                }   
+            }
+            else {
+                routers[Integer.parseInt(event.getArgument(0))].dumpPacketStats();
+            }
+        }
+        events[count].setDone();
     }
+}
+}
 
     /**
      * Process packets, move them from the out queue of one end of the link
@@ -176,9 +176,9 @@ public class Simulator
      */
     private void process_packets()
     {
-	for (int i = 0; i<links.length; i++) {
-	    links[i].movePackets();	    
-	}
+        for (int i = 0; i<links.length; i++) {
+            links[i].movePackets();     
+        }
     }
 
     /**
@@ -188,10 +188,10 @@ public class Simulator
      */
     private void process_routers(int now)
     {
-	for (int i = 0; i<routers.length; i++) {
-	    routers[i].setTimeStep(now);
-	    routers[i].go();
-	}
+        for (int i = 0; i<routers.length; i++) {
+            routers[i].setTimeStep(now);
+            routers[i].go();
+        }
     }
 
     /**
@@ -204,13 +204,13 @@ public class Simulator
      */
     public void main_loop()
     {
-	for (int now=1; now<stop_time; now++) {
-	    System.out.println("Time :"+now);
-	    process_events(now);
-	    process_routers(now);
-	    process_packets();
-	}
-	check_completed();
+        for (int now=1; now<stop_time; now++) {
+            System.out.println("Time :"+now);
+            process_events(now);
+            process_routers(now);
+            process_packets();
+        }
+        check_completed();
     }
 
     /**
@@ -218,17 +218,17 @@ public class Simulator
      */
     private void check_completed()
     {
-	int unused_events = 0;
-	for (int i=0; i<events.length; i++)
-	    {
-		if (events[i].getState() != true) {
-		    unused_events++;
-		}
-	    }
-	if (unused_events > 0) 
-	    {
-		System.out.println("Error, "+unused_events+" events not run.");
-	    }
+        int unused_events = 0;
+        for (int i=0; i<events.length; i++)
+        {
+            if (events[i].getState() != true) {
+                unused_events++;
+            }
+        }
+        if (unused_events > 0) 
+        {
+            System.out.println("Error, "+unused_events+" events not run.");
+        }
     }
     
     /**
@@ -238,11 +238,11 @@ public class Simulator
      */
     public static void main (String args[])
     {
-	if (args.length != 1) {
-	    System.out.println("Usage : java Simulator <config file>");
-	    System.exit(1);
-	}
-	Simulator sim = new Simulator(args[0]);
-	sim.main_loop();
+        if (args.length != 1) {
+            System.out.println("Usage : java Simulator <config file>");
+            System.exit(1);
+        }
+        Simulator sim = new Simulator(args[0]);
+        sim.main_loop();
     }
 }

@@ -41,11 +41,11 @@ public class Packet
      */
     public Packet(int s, int d)
     {
-	src = s;
-	dst = d;
-	type = UNKNOWN;
-	data = new Payload();
-	seq = 0;
+        src = s;
+        dst = d;
+        type = UNKNOWN;
+        data = new Payload();
+        seq = 0;
     }
 
     /**
@@ -54,7 +54,7 @@ public class Packet
      */ 
     public int getSource()
     {
-	return src;
+        return src;
     }
 
     /**
@@ -63,7 +63,7 @@ public class Packet
      */
     public int getType()
     {
-	return type;
+        return type;
     }
 
     /**
@@ -72,7 +72,7 @@ public class Packet
      */
     public void setType(int t)
     {
-	type = t;
+        type = t;
     }
 
     /**
@@ -81,7 +81,7 @@ public class Packet
      */
     public int getDestination()
     {
-	return dst;
+        return dst;
     }
 
     /**
@@ -90,7 +90,7 @@ public class Packet
      */
     public void setSequenceNumber(int s)
     {
-	seq = s;
+        seq = s;
     }
 
     /**
@@ -99,17 +99,17 @@ public class Packet
      */
     public String toString()
     {
-	String s;
-	Vector<Object> d;
-	s = "src "+src+" dst "+dst+" type "+type+" ttl "+ttl+" seq "+seq;
-	if (type == DATA) {
-	    s = s + " path";
-	    d = data.getData();
-	    for (int i=0; i<d.size();i++) {
-		s = s + " (" + ((String)d.elementAt(i)).toString()+")";
-	    }
-	}
-	return s;
+        String s;
+        Vector<Object> d;
+        s = "src "+src+" dst "+dst+" type "+type+" ttl "+ttl+" seq "+seq;
+        if (type == DATA) {
+            s = s + " path";
+            d = data.getData();
+            for (int i=0; i<d.size();i++) {
+                s = s + " (" + ((String)d.elementAt(i)).toString()+")";
+            }
+        }
+        return s;
     }
 
     /**
@@ -118,7 +118,7 @@ public class Packet
      */ 
     public void setPayload(Payload d)
     {
-	data = d;
+        data = d;
     }
 
     /**
@@ -127,7 +127,7 @@ public class Packet
      */ 
     public Payload getPayload()
     {
-	return data;
+        return data;
     }
 
     /** 
@@ -135,7 +135,7 @@ public class Packet
      */
     public void decrement_ttl()
     {
-	ttl--;
+        ttl--;
     }
 
     /**
@@ -144,6 +144,6 @@ public class Packet
      */
     public int get_ttl()
     {
-	return ttl;
+        return ttl;
     }
 }

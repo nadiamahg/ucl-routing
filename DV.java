@@ -57,8 +57,8 @@ class DVRoutingTableEntry implements RoutingTableEntry
 {
     
     public DVRoutingTableEntry(int d, int i, int m, int t)
-	{
-	}
+    {
+    }
     public int getDestination() { return 0; } 
     public void setDestination(int d) { }
     public int getInterface() { return 0; }
@@ -69,8 +69,8 @@ class DVRoutingTableEntry implements RoutingTableEntry
     public void setTime(int t) { }
     
     public String toString() 
-	{
-	    return "";
-	}
+    {
+        return "";
+    }
 }
 

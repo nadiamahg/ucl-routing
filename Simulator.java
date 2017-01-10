@@ -1,15 +1,15 @@
 import java.util.Vector;
 
-/**  
+/**
  * The <code>Simulator</code> class loads the configuration and runs each
- * router with the correct class for that router as specified in the 
+ * router with the correct class for that router as specified in the
  * configurtion file. At each time step the Simulator carries out (in order)
- * event processing <code>process_events</code>, routers tasks 
+ * event processing <code>process_events</code>, routers tasks
  * <code>process_routers</code>, packet forwarding <code>process_packets</code>
  *
- * @author  Adam Greenhalgh                                                    
- * @version 1.0, 16/02/07  
- * @since   JDK1.0                                                             
+ * @author  Adam Greenhalgh
+ * @version 1.0, 16/02/07
+ * @since   JDK1.0
  */
 public class Simulator
 {
@@ -32,7 +32,7 @@ public class Simulator
         Config config = new Config(config_file,this);
     }
 
-    /** 
+    /**
      * Simple toString method.
      * @return String
      */
@@ -40,18 +40,18 @@ public class Simulator
     {
         return "UCL CS Routing Sim";
     }
-    
+
     /**
      * Sets the duration for the simulation.
      * @param t duration of the simulation
-     */ 
+     */
     public void set_stop_time(int t)
     {
         stop_time = t;
     }
 
     /**
-     * Adds the routers created in the <code>Config</code> class to the 
+     * Adds the routers created in the <code>Config</code> class to the
      * the simulator.
      * @param r a list of routers.
      */
@@ -66,13 +66,13 @@ public class Simulator
     }
 
     /**
-     * Adds the events created in the <code>Config</code> class to the 
+     * Adds the events created in the <code>Config</code> class to the
      * the simulator.
      * @param e a list of events.
      */
     public void add_events(Vector<Event> e)
     {
-        events = new Event[e.size()]; 
+        events = new Event[e.size()];
         int count = 0;
         for (Event te : e) {
             System.out.println("Adding "+te);
@@ -82,7 +82,7 @@ public class Simulator
     }
 
     /**
-     * Adds the links created in the <code>Config</code> class to the 
+     * Adds the links created in the <code>Config</code> class to the
      * the simulator and attaches them to the router objects.
      * @param l a list of links.
      */
@@ -95,13 +95,13 @@ public class Simulator
             count++;
         }
         for (int i=0; i<links.length; i++) {
-            routers[links[i].getRouter(0)].addLinks(links[i]); 
-            routers[links[i].getRouter(1)].addLinks(links[i]); 
+            routers[links[i].getRouter(0)].addLinks(links[i]);
+            routers[links[i].getRouter(1)].addLinks(links[i]);
         }
-        
+
     }
 
-    /** 
+    /**
      * Process the events scheduled for the time <code>now</code>
      * @param now current time
      */
@@ -120,55 +120,55 @@ public class Simulator
                     packet_counter++;
                     packet.setSequenceNumber(packet_counter);
                     routers[packet.getSource()].send(packet);
-                    
+
                 }
                 else if (event.getOperation().equals("uplink")) {
                     for (int i=0; i<links.length;i++) {
-                        if (links[i].getRouter(0) == Integer.parseInt(event.getArgument(0)) && 
-                            links[i].getInterface(0) == Integer.parseInt(event.getArgument(1)) && 
-                            links[i].getRouter(1) == Integer.parseInt(event.getArgument(2)) && 
+                        if (links[i].getRouter(0) == Integer.parseInt(event.getArgument(0)) &&
+                            links[i].getInterface(0) == Integer.parseInt(event.getArgument(1)) &&
+                            links[i].getRouter(1) == Integer.parseInt(event.getArgument(2)) &&
                             links[i].getInterface(1) == Integer.parseInt(event.getArgument(3)) ) {
-                            System.out.println("Setting link status to up "+links[i]);
-                        links[i].setState(true);
+                                System.out.println("Setting link status to up "+links[i]);
+                            links[i].setState(true);
+                        }
                     }
                 }
-            }
-            else if (event.getOperation().equals("downlink")) {
-                for (int i=0; i<links.length;i++) {
-                    if (links[i].getRouter(0) == Integer.parseInt(event.getArgument(0)) && 
-                        links[i].getInterface(0) == Integer.parseInt(event.getArgument(1)) && 
-                        links[i].getRouter(1) == Integer.parseInt(event.getArgument(2)) && 
-                        links[i].getInterface(1) == Integer.parseInt(event.getArgument(3)) ) {
-                        System.out.println("Setting link status to down "+links[i]);
-                    links[i].setState(false);
+                else if (event.getOperation().equals("downlink")) {
+                        for (int i=0; i<links.length;i++) {
+                            if (links[i].getRouter(0) == Integer.parseInt(event.getArgument(0)) &&
+                                links[i].getInterface(0) == Integer.parseInt(event.getArgument(1)) &&
+                                links[i].getRouter(1) == Integer.parseInt(event.getArgument(2)) &&
+                                links[i].getInterface(1) == Integer.parseInt(event.getArgument(3)) ) {
+                                System.out.println("Setting link status to down "+links[i]);
+                            links[i].setState(false);
+                        }
+                    }
                 }
+                else if (event.getOperation().equals("dumprt")) {
+                    if (event.getArgument(0).equals("all")) {
+                        for (int i=0; i<routers.length; i++) {
+                            routers[i].dumpRoutingTable();
+                        }
+                    }
+                    else {
+                        routers[Integer.parseInt(event.getArgument(0))].dumpRoutingTable();
+                    }
+                }
+                else if (event.getOperation().equals("dumpPacketStats")) {
+                    System.out.println("event "+event);
+                    if (event.getArgument(0).equals("all")) {
+                        for (int i=0; i<routers.length; i++) {
+                            routers[i].dumpPacketStats();
+                        }
+                    }
+                    else {
+                        routers[Integer.parseInt(event.getArgument(0))].dumpPacketStats();
+                    }
+                }
+                events[count].setDone();
             }
         }
-        else if (event.getOperation().equals("dumprt")) {
-            if (event.getArgument(0).equals("all")) {
-                for (int i=0; i<routers.length; i++) {
-                    routers[i].dumpRoutingTable();
-                }   
-            }
-            else {
-                routers[Integer.parseInt(event.getArgument(0))].dumpRoutingTable();
-            }
-        }
-        else if (event.getOperation().equals("dumpPacketStats")) {
-            System.out.println("event "+event);
-            if (event.getArgument(0).equals("all")) {
-                for (int i=0; i<routers.length; i++) {
-                    routers[i].dumpPacketStats();
-                }   
-            }
-            else {
-                routers[Integer.parseInt(event.getArgument(0))].dumpPacketStats();
-            }
-        }
-        events[count].setDone();
     }
-}
-}
 
     /**
      * Process packets, move them from the out queue of one end of the link
@@ -177,12 +177,12 @@ public class Simulator
     private void process_packets()
     {
         for (int i = 0; i<links.length; i++) {
-            links[i].movePackets();     
+            links[i].movePackets();
         }
     }
 
     /**
-     * Process routers, set the time step for now and then call 
+     * Process routers, set the time step for now and then call
      * the <code>go</code> method of the router object.
      * @param now current time.
      */
@@ -196,11 +196,11 @@ public class Simulator
 
     /**
      * Main loop of the simulator that runs through all the tasks at each
-     * time step.  At each time step the Simulator carries out (in order)   
-     * event processing <code>process_events</code>, routers tasks       
-     * <code>process_routers</code>, 
+     * time step.  At each time step the Simulator carries out (in order)
+     * event processing <code>process_events</code>, routers tasks
+     * <code>process_routers</code>,
      * packet forwarding <code>process_packets</code>
-     *                                   
+     *
      */
     public void main_loop()
     {
@@ -225,12 +225,12 @@ public class Simulator
                 unused_events++;
             }
         }
-        if (unused_events > 0) 
+        if (unused_events > 0)
         {
             System.out.println("Error, "+unused_events+" events not run.");
         }
     }
-    
+
     /**
      * main function called from the command line with one argument
      * which is the configuration file.

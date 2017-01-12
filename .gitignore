@@ -10,3 +10,6 @@
 *.jar
 *.war
 *.ear
+
+# Javadoc
+docs/

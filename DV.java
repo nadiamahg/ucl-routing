@@ -52,7 +52,16 @@ public class DV implements RoutingAlgorithm {
     }
 
     public void tidyTable() {
+        updateDownLinks();
+    }
 
+    private void updateDownLinks() {
+        for (DVRoutingTableEntry entry : entries.values()) {
+            int iface = entry.getInterface();
+            if (!router.getInterfaceState(iface)) {
+                entry.setMetric(INFINITY);
+            }
+        }
     }
 
     public Packet generateRoutingPacket(int iface) {

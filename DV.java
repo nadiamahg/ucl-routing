@@ -99,7 +99,10 @@ public class DV implements RoutingAlgorithm {
         for (Object obj : data) {
             PayloadEntry payloadEntry = (PayloadEntry)obj;
             int destination = payloadEntry.getDestination();
-            int metric = payloadEntry.getMetric() + weight;
+            int metric = payloadEntry.getMetric();
+            if (metric != INFINITY) {
+                metric += weight;
+            }
             processRoutingEntry(destination, iface, metric);
         }
 

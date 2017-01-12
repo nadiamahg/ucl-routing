@@ -39,7 +39,7 @@ public class DV implements RoutingAlgorithm {
 
     public void initalise() {
         DVRoutingTableEntry initialEntry = new DVRoutingTableEntry(router.getId(), LOCAL, 0, 0);
-        entries.put(LOCAL, initialEntry);
+        entries.put(router.getId(), initialEntry);
     }
 
     public int getNextHop(int destination) {

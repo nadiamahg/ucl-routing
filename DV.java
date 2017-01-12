@@ -59,12 +59,11 @@ public class DV implements RoutingAlgorithm {
 
         Payload payload = new Payload();
         for (DVRoutingTableEntry routingEntry : entries.values()) {
-            System.out.println(routingEntry);
             PayloadEntry entry;
             if (poison_reverse && routingEntry.getInterface() == iface) {
                 entry = new PayloadEntry(routingEntry.getDestination(), INFINITY);
             } else {
-                entry = new PayloadEntry(routingEntry.getDestination(), routingEntry.getInterface());
+                entry = new PayloadEntry(routingEntry.getDestination(), routingEntry.getMetric());
             }
             payload.addEntry(entry);
         }
@@ -104,12 +103,15 @@ public class DV implements RoutingAlgorithm {
             }
         } else {
             DVRoutingTableEntry routingEntry = new DVRoutingTableEntry(d, i, m, 0);
-            entries.put(d, entry);
+            entries.put(d, routingEntry);
         }
     }
 
     public void showRoutes() {
         System.out.println("Router " + router.getId());
+        for (DVRoutingTableEntry routingEntry : entries.values()) {
+            System.out.println(routingEntry.toString());
+        }
     }
 }
 

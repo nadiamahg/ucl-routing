@@ -45,7 +45,7 @@ public class DV implements RoutingAlgorithm {
     public int getNextHop(int destination) {
         DVRoutingTableEntry entry = entries.get(destination);
         if (entry != null && entry.getMetric() != INFINITY) {
-            return entry.getDestination();
+            return entry.getInterface();
         } else {
             return UNKNOWN;
         }

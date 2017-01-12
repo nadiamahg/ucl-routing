@@ -108,18 +108,21 @@ public class DV implements RoutingAlgorithm {
 
     }
 
-    private void processRoutingEntry(int d, int i, int m) {
-        DVRoutingTableEntry entry = entries.get(d);
+    private void processRoutingEntry(int dest, int iface, int metric) {
+        DVRoutingTableEntry entry = entries.get(dest);
+        int time = router.getCurrentTime();
         if (entry != null) {
-            if (entry.getInterface() == i) {
-                entry.setMetric(m);
-            } else if (entry.getMetric() > m) {
-                entry.setInterface(i);
-                entry.setMetric(m);
+            if (entry.getInterface() == iface) {
+                entry.setMetric(metric);
+                entry.setTime(time);
+            } else if (entry.getMetric() > metric) {
+                entry.setInterface(iface);
+                entry.setMetric(metric);
+                entry.setTime(time);
             }
         } else {
-            DVRoutingTableEntry routingEntry = new DVRoutingTableEntry(d, i, m, 0);
-            entries.put(d, routingEntry);
+            DVRoutingTableEntry routingEntry = new DVRoutingTableEntry(dest, iface, metric, time);
+            entries.put(dest, routingEntry);
         }
     }
 

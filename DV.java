@@ -57,6 +57,10 @@ public class DV implements RoutingAlgorithm {
 
     public Packet generateRoutingPacket(int iface) {
 
+        if (!router.getInterfaceState(iface)) {
+            return null;
+        }
+
         Payload payload = new Payload();
         for (DVRoutingTableEntry routingEntry : entries.values()) {
             PayloadEntry entry;

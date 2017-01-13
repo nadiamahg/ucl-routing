@@ -85,14 +85,12 @@ public class DV implements RoutingAlgorithm {
             // infinite routes have the garbage collection timer which gets them deleted
             if (entry.getMetric() == INFINITY) {
                 if (entry.getTime() + REMOVE_AFTER * update_interval <= now) {
-                    // System.out.println("REMOVING " + entry.toString());
                     it.remove();
                 }
 
             // all other routes have the expiration timer
             } else {
                 if (entry.getTime() + EXPIRE_AFTER * update_interval <= now) {
-                    // System.out.println("EXPIRING " + entry.toString());
                     entry.setMetric(INFINITY);
                     entry.setTime(now);
                 }

@@ -5,4 +5,4 @@ In test4, we observe counting to infinity again, after which the packet is dropp
 
 Answer 2:
 In test3, enabling poison reverse prevents the problems mentioned earlier.
-In test 4 however, once the network is partitioned, there is still a loop that counts to infinity due to the timing of the
+In test4, however, once the network is partitioned, there is still a loop that counts to infinity due to the timing of the routing table updates.

@@ -60,6 +60,7 @@ public class DV implements RoutingAlgorithm {
             int iface = entry.getInterface();
             if (!router.getInterfaceState(iface)) {
                 entry.setMetric(INFINITY);
+                entry.setTime(router.getCurrentTime());
             }
         }
     }

@@ -10,12 +10,15 @@ public class DV implements RoutingAlgorithm {
     static int UNKNOWN = -2;
     static int INFINITY = 60;
 
+    static int EXPIRE_AFTER = 6; // number of update intervals for the expiration timer
+    static int REMOVE_AFTER = 4; // number of update intervals for the garbage-collection timer
+
     private Router router;
     private int update_interval;
-    private boolean poison_reverse = false;
-    private boolean allow_expire = false;
+    private boolean poison_reverse;
+    private boolean allow_expire;
 
-    private Map<Integer, DVRoutingTableEntry> entries;
+    private Map<Integer, DVRoutingTableEntry> entries; // the routing table
 
     public DV() {
         entries = new HashMap<Integer, DVRoutingTableEntry>();
@@ -53,20 +56,53 @@ public class DV implements RoutingAlgorithm {
 
     public void tidyTable() {
         updateDownLinks();
+        if (allow_expire) {
+            expireOldEntries();
+        }
     }
 
     private void updateDownLinks() {
         for (DVRoutingTableEntry entry : entries.values()) {
             int iface = entry.getInterface();
-            if (!router.getInterfaceState(iface)) {
+            if (!router.getInterfaceState(iface) && entry.getMetric() != INFINITY) {
                 entry.setMetric(INFINITY);
                 entry.setTime(router.getCurrentTime());
             }
         }
     }
 
+    private void expireOldEntries() {
+        int now = router.getCurrentTime();
+        Iterator<DVRoutingTableEntry> it = entries.values().iterator();
+        while (it.hasNext()) {
+            DVRoutingTableEntry entry = it.next();
+
+            // we don't want to expire/delete the local route
+            if (entry.getInterface() == LOCAL) {
+                continue;
+            }
+
+            // infinite routes have the garbage collection timer which gets them deleted
+            if (entry.getMetric() == INFINITY) {
+                if (entry.getTime() + REMOVE_AFTER * update_interval <= now) {
+                    // System.out.println("REMOVING " + entry.toString());
+                    it.remove();
+                }
+
+            // all other routes have the expiration timer
+            } else {
+                if (entry.getTime() + EXPIRE_AFTER * update_interval <= now) {
+                    // System.out.println("EXPIRING " + entry.toString());
+                    entry.setMetric(INFINITY);
+                    entry.setTime(now);
+                }
+            }
+        }
+    }
+
     public Packet generateRoutingPacket(int iface) {
 
+        // no packet if the link on the interface is down
         if (!router.getInterfaceState(iface)) {
             return null;
         }
@@ -98,32 +134,45 @@ public class DV implements RoutingAlgorithm {
         int weight = router.getInterfaceWeight(iface);
 
         for (Object obj : data) {
+
             PayloadEntry payloadEntry = (PayloadEntry)obj;
             int destination = payloadEntry.getDestination();
             int metric = payloadEntry.getMetric();
+
             if (metric != INFINITY) {
                 metric += weight;
             }
+
+            // in case metric < infinity, but metric + weight > infinity
+            // set it to infinity
+            if (metric > INFINITY) {
+                metric = INFINITY;
+            }
+
             processRoutingEntry(destination, iface, metric);
         }
 
     }
 
+    // process a single entry from the routing packet
     private void processRoutingEntry(int dest, int iface, int metric) {
         DVRoutingTableEntry entry = entries.get(dest);
-        int time = router.getCurrentTime();
+        int now = router.getCurrentTime();
         if (entry != null) {
-            if (entry.getInterface() == iface) {
-                entry.setMetric(metric);
-                entry.setTime(time);
-            } else if (entry.getMetric() > metric) {
+            if (entry.getInterface() == iface || entry.getMetric() > metric) {
                 entry.setInterface(iface);
-                entry.setMetric(metric);
-                entry.setTime(time);
+                // do not update the timer if both the old and new metric are infinity
+                if (!(metric == INFINITY && entry.getMetric() == INFINITY)) {
+                    entry.setTime(now);
+                    entry.setMetric(metric);
+                }
             }
         } else {
-            DVRoutingTableEntry routingEntry = new DVRoutingTableEntry(dest, iface, metric, time);
-            entries.put(dest, routingEntry);
+            // ignore received entry if its metric is infinity
+            if (metric != INFINITY) {
+                DVRoutingTableEntry routingEntry = new DVRoutingTableEntry(dest, iface, metric, now);
+                entries.put(dest, routingEntry);
+            }
         }
     }
 
@@ -135,6 +184,8 @@ public class DV implements RoutingAlgorithm {
     }
 }
 
+// A special (immutable) class for encoding entries into Payload.
+// (to avoid the worries of mutability when passing entries around)
 class PayloadEntry {
 
     private int destid;

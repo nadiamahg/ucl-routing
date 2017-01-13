@@ -1,0 +1,8 @@
+Answer 1:
+In test3, we observe bouncing while the initial packet (src 0 dst 4) gets forwarded back and forth between router 1 and 2. After some time, the routes converge and the packet is successfully routed to router 4.
+Later (time 45), the network gets partitioned by taking down a link, and the packet (sent at time 50) is forwarded back and forth until the metrics reach infinity, when the packet is dropped.
+In test4, we observe counting to infinity again, after which the packet is dropped
+
+Answer 2:
+In test3, enabling poison reverse prevents the problems mentioned earlier.
+In test 4 however, once the network is partitioned, there is still a loop that counts to infinity due to the timing of the
